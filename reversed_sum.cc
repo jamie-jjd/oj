@@ -9,36 +9,37 @@ int main ()
     std::string integer_0 {};
     std::string integer_1 {};
     std::cin >> integer_0 >> integer_1;
-    bool is_leading_zero {true};
+    auto& sum {(integer_0.size() < integer_1.size()) ? integer_1 : integer_0};
+    auto& integer {(integer_0.size() < integer_1.size()) ? integer_0 : integer_1};
     bool is_carry {};
     uint64_t digit {};
-    auto it_0 {std::begin(integer_0)};
-    auto it_1 {std::begin(integer_1)};
-    while (it_0 != std::end(integer_0) && it_1 != std::end(integer_1))
+    auto it_sum {std::begin(sum)};
+    auto it_integer {std::begin(integer)};
+    while (it_sum != std::end(sum) && it_integer != std::end(integer))
     {
-      auto sum_digit {(*it_0++ - '0') + (*it_1++ - '0') + is_carry};
+      auto sum_digit {(*it_sum - '0') + (*it_integer - '0') + is_carry};
       is_carry = (sum_digit / 10);
-      digit = sum_digit % 10;
-      is_leading_zero &= (digit == 0);
-      if (!is_leading_zero) { std::cout << digit; }
+      *it_sum = ('0' + sum_digit % 10);
+      ++it_sum; ++it_integer;
     }
-    while (it_0 != std::end(integer_0))
+    while (is_carry && it_sum != std::end(sum))
     {
-      auto digit {(*it_0 - '0' + is_carry) % 10};
-      is_carry = (is_carry && (*it_0 == '9'));
-      is_leading_zero &= (digit == 0);
-      if (!is_leading_zero) { std::cout << digit; }
-      ++it_0;
+      if (*it_sum == '9') { *it_sum = '0'; }
+      else
+      {
+        ++(*it_sum);
+        is_carry = false;
+      }
+      ++it_sum;
     }
-    while (it_1 != std::end(integer_1))
+    if (is_carry) { sum.push_back('1'); }
+    while (sum.back() == '0') { sum.pop_back(); }
+    bool is_leading_zero {true};
+    for (auto const& digit : sum)
     {
-      auto digit {(*it_1 - '0' + is_carry) % 10};
-      is_carry = (is_carry && (*it_1 == '9'));
-      is_leading_zero &= (digit == 0);
+      is_leading_zero &= (digit == '0');
       if (!is_leading_zero) { std::cout << digit; }
-      ++it_1;
     }
-    if (is_carry) { std::cout << "1"; }
     std::cout << "\n";
   }
   return 0;
