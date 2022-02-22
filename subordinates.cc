@@ -9,7 +9,6 @@ void DFS
   std::vector<uint64_t>& subtree_size
 )
 {
-  std::vector<bool> is_visited(tree.size());
   std::deque<std::pair<uint64_t, bool>> stack;
   stack.emplace_back(0, true);
   while (!stack.empty())
@@ -24,7 +23,7 @@ void DFS
     else
     {
       for (auto& to : tree[from]) { subtree_size[from] += subtree_size[to] + 1; }
-      stack.pop_back();      
+      stack.pop_back();
     }
   }
   return;
