@@ -1,26 +1,37 @@
 #include <iostream>
-#include <list>
+#include <queue>
+#include <vector>
 
 int main ()
 {
-  uint64_t X {};
-  std::list<uint64_t> list;
-  auto median {std::end(list)};
+  std::priority_queue<uint64_t, std::vector<uint64_t>, std::less<uint64_t>> max_heap;
+  std::priority_queue<uint64_t, std::vector<uint64_t>, std::greater<uint64_t>> min_heap;
+  uint64_t i {}, X;
   while (std::cin >> X)
   {
-    auto it {std::begin(list)};
-    while (it != std::end(list) && *it < X) { ++it; }
-    list.insert(it, X);
-    if (list.size() & 1)
+    if (i & 1)
     {
-      if (*median <= X) { median = std::next(median); }
-      std::cout << *median << "\n";
+      if (X < max_heap.top())
+      {
+        max_heap.push(X);
+        min_heap.push(max_heap.top());
+        max_heap.pop();
+      }
+      else { min_heap.push(X); }
+      std::cout << (max_heap.top() + min_heap.top()) / 2 << "\n";
     }
     else
     {
-      if (X <= *median) { median = std::prev(median); }
-      std::cout << (*median + *std::next(median)) / 2 << "\n";
+      if (!max_heap.empty() && X > max_heap.top())
+      {
+        min_heap.push(X);
+        max_heap.push(min_heap.top());
+        min_heap.pop();
+      }
+      else { max_heap.push(X); }
+      std::cout << max_heap.top() << "\n";
     }
+    ++i;
   }
   return 0;
 }
